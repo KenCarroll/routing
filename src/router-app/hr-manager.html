@@ -1,0 +1,137 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="./make-choice.html">
+
+<dom-module id="hr-manager">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <app-route 
+      route="{{route}}" 
+      pattern="{{pattern}}" 
+      data="{{routeData}}"
+      tail="{{subRoute}}">
+    </app-route>
+
+    <h2>Welcome</h2>
+    <p>I'm your HR manager. To progress you need to select your preferred management style.</p>
+    <p>If you are unhappy with the choices please <a href='/hr/employment'>Click here</a></p>
+    <iron-pages selected="[[routeData.page]]" attr-for-selected="choice" fallback-selection="management">
+      <make-choice choice="management" title="What type of manager do you want?" option1="hard" option2="soft" on-decision="_onManagementDecision"></make-choice>
+      <make-choice choice="employment" title="Sorry you are unhappy. What would you like to do?"  option1="Stay" option2="Leave" on-decision="_onEmploymentDecision"></make-choice>
+      <make-choice choice="start" title="1. First Question" option1="Management" option2="Employment" on-decision="_questionType"></make-choice>
+      <paper-button choice="error" on-tap="_help">WHOOPS! THere is a HR Manager Error. Click me to Return to the start</paper-button>
+    </iron-pages>
+    <paper-button on-tap="_onHelp">Help!</paper-button>
+
+    <paper-dialog id='confirmManagementDialog'>
+        <h2>Great. You're Employed</h2>
+        <p>you choose a [[_managementStyle]] management style!</p>
+        <p>We will now introduce you to your new manager.</p>
+        <div class="buttons">
+          <paper-button dialog-dismiss on-tap="_onManagementCancel">Cancel</paper-button>
+          <paper-button autofocus on-tap="_onManagementAccept">Accept</paper-button>
+        </div>
+      </paper-dialog>
+      <paper-dialog id='confirmExitDialog'>
+          <h2>Oh no. We're sorry to see you go.</h2>
+          <p>But if your sure please hit the Leave button</p>
+          <div class="buttons">
+            <paper-button dialog-dismiss on-tap="_onExitCancel">Cancel</paper-button>
+            <paper-button autofocus on-tap="_onExitAccept">Leave</paper-button>
+          </div>
+        </paper-dialog>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class HRManager extends Polymer.Element {
+      static get is() { return 'hr-manager'; }
+      static get properties() {
+        return {
+          employee: {
+            type: String,
+            value: 'undefined'
+          },
+          _firstQuestion: {
+            type: String,
+            value: "awaiting choice"
+          },
+          _managementStyle: {
+            type: String,
+            value: "undefined",
+            reflectToAttribute: true
+          },
+          _employmentOption: {
+            type: String,
+            value: "undefined",
+            reflectToAttribute: true
+          },
+          route: {
+            type: Object,
+          },
+          pattern: {
+            type: String,
+            value: "/:page" 
+          },
+          routeData: {
+            type: Object,
+          },
+          subRoute: {
+            type: Object,
+          }
+        }
+      }
+      _questionType(e) {
+        this._firstQuestion = e.detail.option;
+        if(e.detail.option == "Management") {
+          this.set('route.path', '/management');
+        } else {
+          this.set('route.path', '/employment');
+        }
+      }
+      _onManagementDecision(e) {
+        this._managementStyle = e.detail.option;
+        this.$.confirmManagementDialog.open();
+      }
+      _onEmploymentDecision(e) {
+        this._employmentOption = e.detail.option;
+        if(this._employmentOption == 'Stay') {
+          this.set('route.path', '/')
+        } else {
+          this.$.confirmExitDialog.open();
+        }
+      }
+      _onHelp(){
+        this.dispatchEvent(new CustomEvent('help'));
+      }
+      _onManagementAccept() {
+        this.$.confirmManagementDialog.close();
+       //  this.dispatchEvent(new CustomEvent('manager'));
+        this.dispatchEvent(new CustomEvent('manager', {detail: {option: this._managementStyle}}));
+      }
+      _onManagementCancel() {
+        this.set('route.path', '/');
+      }
+      _onExitAccept() {
+        this.$.confirmExitDialog.close();
+        this.dispatchEvent(new CustomEvent('exit'));
+      }
+      _onExitCancel() {
+        this.set('route.path', '/');
+      }
+    }
+
+    window.customElements.define(HRManager.is, HRManager);
+  </script>
+</dom-module>

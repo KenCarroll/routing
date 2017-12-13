@@ -1,0 +1,66 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./make-choice.html">
+
+<dom-module id="make-choice">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <h3>[[title]]</h3>
+    <hr>
+    <paper-button on-tap="_tapOption1">[[option1]]</paper-button>
+    <p>or</p>
+    <paper-button on-tap="_tapOption2">[[option2]]</paper-button>
+    <hr>
+    <!--
+    <p>Choice: [[_selected]]</p>
+    -->
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class MakeChoice extends Polymer.Element {
+      static get is() { return 'make-choice'; }
+      static get properties() {
+        return {
+          title: {
+            type: String,
+            value: 'Make-Choice'
+          },
+          _selected: {
+            type: String,
+            value: "<awaiting choice>",
+            reflectToAttribute: true
+          },
+          option1: {
+            type: String,
+            value: "option1"
+          },
+          option2: {
+            type: String,
+            value: "option2"
+          }
+        }
+      }
+      _tapOption1() {
+        this._selected = this.option1;
+        this.dispatchEvent(new CustomEvent('decision', {detail: {option: this.option1}}));
+      }
+      _tapOption2() {
+        this._selected = this.option2;
+        this.dispatchEvent(new CustomEvent('decision', {detail: {option: this.option2}}));
+      }
+    }
+
+    window.customElements.define(MakeChoice.is, MakeChoice);
+  </script>
+</dom-module>

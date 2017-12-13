@@ -1,0 +1,91 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./make-choice.html">
+<link rel="import" href="./home-page.html">
+<link rel="import" href="./hr-manager.html">
+<link rel="import" href="./soft-manager.html">
+<link rel="import" href="./hard-manager.html">
+
+
+<dom-module id="router-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+<app-location route="{{route}}"></app-location>
+<app-route 
+  route="{{route}}" 
+  pattern="{{pattern}}" 
+  data="{{routeData}}"
+  tail="{{subRoute}}">
+</app-route>
+
+    <a href="/">home</a>  
+    <p>route: [[route.path]] routeData: [[routeData.page]] tail: [[subRoute.path]]</p>
+    <hr>
+    <iron-pages selected="[[routeData.page]]" attr-for-selected="choice" fallback-selection="home">
+      <hr-manager   choice="hr" route={{subRoute}} on-help="_onHelp" on-manager="_onNewManager" on-exit="_onExit" ></hr-manager>
+      <hard-manager choice="hard" on-request-hr="_onRequestHR"></hard-manager>
+      <soft-manager choice="soft" on-request-hr="_onRequestHR"></soft-manager>
+      <home-page choice="home" on-start="_onTapStart"></home-page>
+    </iron-pages>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class RouterApp extends Polymer.Element {
+      static get is() { return 'router-app'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'router-app'
+          },
+          route: {
+            type: Object,
+          },
+          pattern: {
+            type: String,
+            value: "/:page" 
+          },
+          routeData: {
+            type: Object,
+          },
+          subRoute: {
+            type: Object,
+          },
+        }
+      }
+      ready() {
+        super.ready();
+        //this.addEventListener('decision', this._onDecision);
+      }
+     _onTapStart() {
+        this.set('route.path', '/hr');
+      }
+      _onNewManager(e){
+        this.set('route.path', `/${e.detail.option}`);
+      }
+      _onExit(e){
+        this.set('route.path', '/home');
+      }
+      _onRequestHR(e){
+        this.set('route.path', '/hr');
+      }    
+      _onHelp(e) {
+        this.set('route.path', '/home');        
+      }
+    }
+
+    window.customElements.define(RouterApp.is, RouterApp);
+  </script>
+</dom-module>

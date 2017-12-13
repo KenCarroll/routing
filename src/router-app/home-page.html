@@ -1,0 +1,33 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+
+<dom-module id="home-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <h3>Home</h3>
+    <p>I'm using this 'app' to get familiar with the Polymer app-router</p>
+    <p>The 'app' will create a </p>
+    <paper-button on-tap="_tapStart">START</paper-button>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class HomePage extends Polymer.Element {
+      static get is() { return 'home-page'; }
+      _tapStart() {
+        this.dispatchEvent(new CustomEvent('start'));
+      }
+    }
+
+    window.customElements.define(HomePage.is, HomePage);
+  </script>
+</dom-module>

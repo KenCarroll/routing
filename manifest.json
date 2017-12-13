@@ -1,0 +1,7 @@
+{
+  "name": "router",
+  "short_name": "router",
+  "description": "test of polymer router",
+  "start_url": "/",
+  "display": "standalone"
+}

@@ -1,0 +1,80 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./make-choice.html">
+
+<dom-module id="soft-manager">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <app-route 
+      route="{{route}}" 
+      pattern="{{pattern}}" 
+      data="{{routeData}}"
+      tail="{{subRoute}}">
+    </app-route>
+
+    <h2>Hello [[employee]]!</h2>
+    <h1>I'm a 'soft' Manager. What would you like to do?</h1>
+    <iron-pages selected="[[routeData.page]]" attr-for-selected="choice" fallback-selection="default">
+      <make-choice choice="worktype" option1="none" option2="some"></make-choice>
+      <make-choice choice="default" option1="payrise" option2="paycut"></make-choice>
+      <make-choice choice="payrise" option1="low" option2="high"></make-choice>
+    </iron-pages>
+    <hr>
+    <p>Feeling unhappy? Please go to HR</p>
+    <paper-button on-tap="_help">Go to HR</paper-button>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class SoftManager extends Polymer.Element {
+      static get is() { return 'soft-manager'; }
+      static get properties() {
+        return {
+          employee: {
+            type: String,
+            value: 'Nice Manager'
+          },
+
+          newChoice: {
+            type: String,
+            value: "awaiting choice"
+          },
+          route: {
+            type: Object,
+          },
+          pattern: {
+            type: String,
+            value: "/:page" 
+          },
+          routeData: {
+            type: Object,
+          },
+          subRoute: {
+            type: Object,
+          }
+        }
+      }
+      _option1() {
+        this.choice = "option1";
+      }
+      _option2() {
+        this.choice = "option2";
+      }
+      _help(){
+        this.dispatchEvent(new CustomEvent('request-hr'));
+      }
+    }
+
+    window.customElements.define(SoftManager.is, SoftManager);
+  </script>
+</dom-module>
